@@ -16,6 +16,7 @@ public class Move : MonoBehaviour
     public float gravity = 9.8f;
     public float fallSpeed;
     public float jumpForce;
+    private bool isSprint;
         
     public Camera mainCamera;
     private Vector3 camForward;
@@ -25,6 +26,7 @@ public class Move : MonoBehaviour
     void Start()
     {
         player = GetComponent<CharacterController>();
+        isSprint = false;
         
     }
 
