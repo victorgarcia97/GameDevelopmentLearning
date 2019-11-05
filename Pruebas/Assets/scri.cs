@@ -1,25 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class HealthBar : MonoBehaviour
+public class scri : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Image health;
-
+    public GameObject player;
     void Start()
     {
-   
+        
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        if (Input.GetKeyUp(KeyCode.R))
-        {
-            health.fillAmount -= 0.005f;
-        }
+        gameObject.transform.LookAt(player.transform.position);
+        
     }
-
 }
