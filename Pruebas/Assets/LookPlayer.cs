@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class scri : MonoBehaviour
+public class LookPlayer : MonoBehaviour
 {
-    // Start is called before the first frame update
     public GameObject player;
+
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
         gameObject.transform.LookAt(player.transform.position);
-        
+
+
     }
 }

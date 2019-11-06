@@ -16,7 +16,6 @@ public class EnemyConfig : MonoBehaviour
     
     internal void LoseLife(float lifeLost)
     {
-     
         float pctLost;
         currentHealth -= lifeLost;
         pctLost = lifeLost/health;
@@ -24,12 +23,12 @@ public class EnemyConfig : MonoBehaviour
         healthBar.fillAmount -= pctLost;
     }
     // Update is called once per frame
-    void LateUpdate()
+    void Update()
     {
         if(currentHealth == 0.0)
         {
             Debug.Log("Muere");
-            Destroy(gameObject);
+            Destroy(gameObject,2f);
         }
        
         

@@ -20,10 +20,23 @@ public class PlayerCombat : MonoBehaviour
         {
             Debug.Log("Ataca");
             enemy = GameObject.Find(collision.gameObject.name);
-            enemy.GetComponent<EnemyConfig>().LoseLife(damage);
             isFigthing = true;
         }
 
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.name.Equals(enemy.name))
+        {
+            isFigthing = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.name.Equals(enemy.name)){
+            isFigthing = false;
+        }
     }
 
 
@@ -31,11 +44,9 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /**if (isFigthing)
+        if (isFigthing && Input.GetKey(KeyCode.Q))
         {
-           enemy.GetComponent<EnemyConfig>().LoseLife(damage);
-           isFigthing = false;
+            enemy.GetComponent<EnemyConfig>().LoseLife(damage);
         }
-        **/
     }
 }
