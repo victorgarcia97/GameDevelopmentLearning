@@ -9,8 +9,12 @@ public class EnemyConfig : MonoBehaviour
     public static float health = 100f;
     private float currentHealth;
     public Image healthBar;
+    public bool isDead;
+    private Rigidbody rb;
     void Start()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
+        isDead = false;
         currentHealth = 100f;
     }
     
@@ -21,12 +25,20 @@ public class EnemyConfig : MonoBehaviour
         pctLost = lifeLost/health;
         Debug.Log(pctLost);
         healthBar.fillAmount -= pctLost;
+        if(currentHealth == 0.0f)
+        {
+            //rb.freezeRotation = false;
+            isDead = true;
+        }
     }
     // Update is called once per frame
     void Update()
     {
-        if(currentHealth == 0.0)
+        if(isDead)
         {
+            //rb.mass = 1;
+            //rb.drag = 1;
+            //rb.AddForce(new Vector3(0, -5, 0));
             Debug.Log("Muere");
             Destroy(gameObject,2f);
         }

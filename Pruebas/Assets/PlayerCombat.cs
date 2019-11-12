@@ -18,7 +18,6 @@ public class PlayerCombat : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("Enemy"))
         {
-            Debug.Log("Ataca");
             enemy = GameObject.Find(collision.gameObject.name);
             isFigthing = true;
         }
@@ -44,8 +43,9 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isFigthing && Input.GetKey(KeyCode.Q))
+        if (isFigthing && Input.GetKey(KeyCode.Mouse0))
         {
+            Debug.Log("Ataca");
             enemy.GetComponent<EnemyConfig>().LoseLife(damage);
         }
     }
