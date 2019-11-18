@@ -33,7 +33,7 @@ public class Spawner : MonoBehaviour
     {
         int spawnPointX = Random.Range(minRange, maxRange);
         int spawnPointZ = Random.Range(minRange, maxRange);
-
+        /**
         int packSpawn = Random.Range(5, maxPackSpawn);
         int i = 0;
         while(packSpawn != 0)
@@ -46,26 +46,25 @@ public class Spawner : MonoBehaviour
 
             int signo = Random.Range(-1, 1);
             spawnPointX += signo;
-            spawnPointY += -signo;
+            spawnPointZ += -signo;
             packSpawn--;
         }
-
-        /**enemy.name = "nuevo" + spawners+"1";
-        GameObject nuevo = Instantiate(enemy, new Vector3(spawnPointX, 1, spawnPointY), new Quaternion());
+        **/
+        enemy.name = "nuevo" + spawners+"1";
+        GameObject nuevo = Instantiate(enemy, new Vector3(spawnPointX, 1, spawnPointZ), new Quaternion());
         enemy.name = "nuevo" + spawners + "2";
-        GameObject nuevo1 = Instantiate(enemy, new Vector3(spawnPointX+1, 1, spawnPointY+1), new Quaternion());
+        GameObject nuevo1 = Instantiate(enemy, new Vector3(spawnPointX+1, 1, spawnPointZ+1), new Quaternion());
         enemy.name = "nuevo" + spawners + "3";
-        GameObject nuevo2 = Instantiate(enemy, new Vector3(spawnPointX-1, 1, spawnPointY-1), new Quaternion());
+        GameObject nuevo2 = Instantiate(enemy, new Vector3(spawnPointX-1, 1, spawnPointZ-1), new Quaternion());
         enemy.name = "nuevo" + spawners + "4";
-        GameObject nuevo3 = Instantiate(enemy, new Vector3(spawnPointX+1, 1, spawnPointY-1), new Quaternion());
+        GameObject nuevo3 = Instantiate(enemy, new Vector3(spawnPointX+1, 1, spawnPointZ-1), new Quaternion());
         enemy.name = "nuevo" + spawners + "5";
-        GameObject nuevo4 = Instantiate(enemy, new Vector3(spawnPointX-1, 1, spawnPointY+1), new Quaternion());
+        GameObject nuevo4 = Instantiate(enemy, new Vector3(spawnPointX-1, 1, spawnPointZ+1), new Quaternion());
         nuevo.SetActive(true);
         nuevo1.SetActive(true);
         nuevo2.SetActive(true);
         nuevo3.SetActive(true);
         nuevo4.SetActive(true);
-      **/
         spawners--;
     }
 

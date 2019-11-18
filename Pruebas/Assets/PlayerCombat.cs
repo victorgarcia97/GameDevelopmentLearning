@@ -7,7 +7,7 @@ public class PlayerCombat : MonoBehaviour
     // Start is called before the first frame update
     public float damage;
     public bool isFigthing;
-    public GameObject enemy;
+    private GameObject enemy;
 
     void Start()
     {
