@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class EnemyConfig : MonoBehaviour
@@ -11,13 +12,16 @@ public class EnemyConfig : MonoBehaviour
     public Image healthBar;
     public bool isDead;
     private Rigidbody rb;
+    private NavMeshAgent nav;
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
+        nav = gameObject.GetComponent<NavMeshAgent>();
         isDead = false;
         currentHealth = 100f;
     }
-    
+
+    [System.Obsolete]
     internal void LoseLife(float lifeLost)
     {
         float pctLost;
@@ -27,7 +31,7 @@ public class EnemyConfig : MonoBehaviour
         healthBar.fillAmount -= pctLost;
         if(currentHealth == 0.0f)
         {
-            //rb.freezeRotation = false;
+            nav.Stop();
             isDead = true;
         }
     }
