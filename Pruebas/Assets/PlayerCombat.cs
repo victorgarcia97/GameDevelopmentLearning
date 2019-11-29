@@ -8,7 +8,8 @@ public class PlayerCombat : MonoBehaviour
     public float damage;
     public bool isFigthing;
     private GameObject enemy;
-
+    public float attackSpeed;
+    private float nextAttack = 0.0f;
     void Start()
     {
         
@@ -26,14 +27,14 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.name.Equals(enemy.name))
+        if (enemy != null && collision.gameObject.name.Equals(enemy.name))
         {
             isFigthing = true;
         }
     }
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.name.Equals(enemy.name)){
+        if (enemy != null && collision.gameObject.name.Equals(enemy.name)){
             isFigthing = false;
         }
     }
@@ -43,8 +44,9 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isFigthing && Input.GetKey(KeyCode.Mouse0))
+        if (Time.time > nextAttack && Input.GetKey(KeyCode.Mouse0) && isFigthing)
         {
+            nextAttack = Time.time + attackSpeed;
             Debug.Log("Ataca");
             enemy.GetComponent<EnemyConfig>().LoseLife(damage);
         }

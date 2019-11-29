@@ -16,7 +16,6 @@ public class Move : MonoBehaviour
     public float gravity = 9.8f;
     public float fallSpeed;
     public float jumpForce;
-    private bool isSprint;
         
     public Camera mainCamera;
     private Vector3 camForward;
@@ -26,8 +25,6 @@ public class Move : MonoBehaviour
     void Start()
     {
         player = GetComponent<CharacterController>();
-        isSprint = false;
-        
     }
 
     // Update is called once per frame
@@ -40,23 +37,23 @@ public class Move : MonoBehaviour
         playerInput = new Vector3(horizantalMove, 0, verticalMove);
         playerInput = Vector3.ClampMagnitude(playerInput, 1);
 
-        camDirection();
+        CamDirection();
 
         movePlayer = playerInput.x * camRight + playerInput.z * camForward;
         movePlayer = movePlayer * speed;
 
         player.transform.LookAt(player.transform.position + movePlayer);
 
-        setGravity();
+        SetGravity();
 
-        playerSkills();
+        PlayerSkills();
 
 
         player.Move(movePlayer * Time.deltaTime);
         
     }
 
-    void camDirection()
+    void CamDirection()
     {
         camForward = mainCamera.transform.forward;
         camRight = mainCamera.transform.right;
@@ -68,7 +65,7 @@ public class Move : MonoBehaviour
         camRight = camRight.normalized;
     }
 
-    void setGravity()
+    void SetGravity()
     {
         if(player.isGrounded)
         {
@@ -82,7 +79,7 @@ public class Move : MonoBehaviour
         }
     }
 
-    void playerSkills()
+    void PlayerSkills()
     {
         if(player.isGrounded && Input.GetButtonDown("Jump"))
         {

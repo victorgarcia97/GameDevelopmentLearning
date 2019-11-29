@@ -1278,7 +1278,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 2.0022072e-19, z: 4.8354122e+30, w: 0.0025847827}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1506,6 +1506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   isFigthing: 0
+  attackSpeed: 5
 --- !u!54 &821712198
 Rigidbody:
   m_ObjectHideFlags: 0

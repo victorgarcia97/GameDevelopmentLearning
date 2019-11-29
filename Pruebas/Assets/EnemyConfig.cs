@@ -21,7 +21,6 @@ public class EnemyConfig : MonoBehaviour
         currentHealth = 100f;
     }
 
-    [System.Obsolete]
     internal void LoseLife(float lifeLost)
     {
         float pctLost;
@@ -31,7 +30,7 @@ public class EnemyConfig : MonoBehaviour
         healthBar.fillAmount -= pctLost;
         if(currentHealth == 0.0f)
         {
-            nav.Stop();
+            nav.isStopped = true;
             isDead = true;
         }
     }
