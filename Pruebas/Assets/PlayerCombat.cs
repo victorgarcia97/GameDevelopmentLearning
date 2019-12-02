@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -8,11 +9,20 @@ public class PlayerCombat : MonoBehaviour
     public float damage;
     public bool isFigthing;
     private GameObject enemy;
+
+
     public float attackSpeed;
     private float nextAttack = 0.0f;
+
+    public Image playerHealthBar;
+    public float playerHealth = 100f;
+    private float currentPlayerHealth;
+    public bool isPlayerDead;
+
     void Start()
     {
-        
+        currentPlayerHealth = playerHealth;
+        isPlayerDead = false;   
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -39,15 +49,36 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    internal void PlayerTakeDamage(float playerLifeLost)
+    {
+        float pctLost;
+        currentPlayerHealth -= playerLifeLost;
+        pctLost = playerLifeLost / playerHealth;
+        playerHealthBar.fillAmount -= pctLost;
+        if(currentPlayerHealth == 0.0f)
+        {
+            isPlayerDead = true;
+        }
+        
+        
+    }
+
 
 
     // Update is called once per frame
     void Update()
     {
+        if (isPlayerDead)
+        {
+            Destroy(gameObject);
+            isPlayerDead = false;
+            Debug.Log("Muere jugador");
+        }
+
         if (Time.time > nextAttack && Input.GetKey(KeyCode.Mouse0) && isFigthing)
         {
             nextAttack = Time.time + attackSpeed;
-            Debug.Log("Ataca");
+            Debug.Log("Ataca a enemigo");
             enemy.GetComponent<EnemyConfig>().LoseLife(damage);
         }
     }

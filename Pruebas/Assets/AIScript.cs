@@ -14,29 +14,34 @@ public class AIScript : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         //agent.Warp(gameObject.transform.position);
         isOnSigth = false;
-        
-        
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        checkDistance();
-        if (isOnSigth)
+        if (player != null)
         {
-            agent.destination = player.position;
+            checkDistance();
+            if (isOnSigth)
+            {
+                agent.destination = player.position;
+            }
+        } else
+        {
+            agent.isStopped = true;
         }
-        
+
     }
 
     void checkDistance()
     {
         float distance;
         distance = Vector3.Distance(gameObject.transform.position, player.transform.position);
-        if (distance < 10) {
+        if (distance < 10)
+        {
             isOnSigth = true;
         }
-
     }
 }

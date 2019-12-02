@@ -14,7 +14,10 @@ public class LookPlayer : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        gameObject.transform.LookAt(player.transform.position);
+        if (player != null)
+        {
+            gameObject.transform.LookAt(player.transform.position);
+        }
 
 
     }
