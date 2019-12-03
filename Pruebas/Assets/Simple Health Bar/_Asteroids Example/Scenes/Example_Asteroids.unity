@@ -475,6 +475,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 195574, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 410280, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: .569999993
+      objectReference: {fileID: 0}
+    - target: {fileID: 424590, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: .569999993
+      objectReference: {fileID: 0}
     - target: {fileID: 487864, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -507,6 +519,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 6482114, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 11409560, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
       propertyPath: renderCam
       value: 
@@ -531,10 +547,6 @@ PrefabInstance:
       propertyPath: gunHeatBar
       value: 
       objectReference: {fileID: 1796999177}
-    - target: {fileID: 6482114, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 11453080, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
       propertyPath: healthBar
       value: 
@@ -543,18 +555,6 @@ PrefabInstance:
       propertyPath: shieldBar
       value: 
       objectReference: {fileID: 102114793}
-    - target: {fileID: 424590, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: .569999993
-      objectReference: {fileID: 0}
-    - target: {fileID: 410280, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: .569999993
-      objectReference: {fileID: 0}
-    - target: {fileID: 195574, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 13634550, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}
     - {fileID: 13648008, guid: 9ad7353e3ce941340aaae949f2e77524, type: 3}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
@@ -8,7 +9,7 @@ public class PlayerCombat : MonoBehaviour
     // Start is called before the first frame update
     public float damage;
     public bool isFigthing;
-    private GameObject enemy;
+    public GameObject enemy;
 
 
     public float attackSpeed;
@@ -70,9 +71,11 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isPlayerDead)
         {
-            Destroy(gameObject);
             isPlayerDead = false;
             Debug.Log("Muere jugador");
+            Destroy(gameObject);
+            Debug.Log("ESPERADO");
+            SceneManager.LoadScene("DieScene", LoadSceneMode.Single);
         }
 
         if (Time.time > nextAttack && Input.GetKey(KeyCode.Mouse0) && isFigthing)

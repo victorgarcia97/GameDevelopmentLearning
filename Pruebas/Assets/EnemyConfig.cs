@@ -36,6 +36,8 @@ public class EnemyConfig : MonoBehaviour
         isDead = false;
         currentHealth = 100f;
         isFightingPlayer = false;
+        attackSpeed = Random.Range(10, 30);
+        attackSpeed = attackSpeed / 10;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -88,7 +90,7 @@ public class EnemyConfig : MonoBehaviour
             Destroy(gameObject,2f);
         }
 
-        if (Time.time > nextAttack && isFightingPlayer)
+        if (Time.time > nextAttack && player != null && isFightingPlayer )
         {
             Debug.Log("Ataque a jugador");
             player.GetComponent<PlayerCombat>().PlayerTakeDamage(damageDone);
