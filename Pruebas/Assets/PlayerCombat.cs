@@ -20,6 +20,8 @@ public class PlayerCombat : MonoBehaviour
     private float currentPlayerHealth;
     public bool isPlayerDead;
 
+    public GameObject canv;
+
     void Start()
     {
         currentPlayerHealth = playerHealth;
@@ -75,7 +77,8 @@ public class PlayerCombat : MonoBehaviour
             Debug.Log("Muere jugador");
             Destroy(gameObject);
             Debug.Log("ESPERADO");
-            SceneManager.LoadScene("DieScene", LoadSceneMode.Single);
+            //SceneManager.LoadScene("DieScene", LoadSceneMode.Single);
+            canv.SetActive(true);
         }
 
         if (Time.time > nextAttack && Input.GetKey(KeyCode.Mouse0) && isFigthing)
