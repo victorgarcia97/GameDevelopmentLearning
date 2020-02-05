@@ -9,7 +9,7 @@ public class MainMenuScript : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("EscenaJuego",LoadSceneMode.Single);
+        SceneManager.LoadScene("DungeonGeneration",LoadSceneMode.Single);
     }
 
     public void GoToMainMenu()
