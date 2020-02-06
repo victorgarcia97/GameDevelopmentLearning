@@ -1,14 +1,18 @@
 ﻿using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.AI;
 
 public class ModularWorldGenerator : MonoBehaviour
 {
 	public Module[] Modules;
 	public Module StartModule;
     public GameObject player;
+    public GameObject enemy;
 
-	public int Iterations = 5;
+    public NavMeshSurface[] baker;
+
+    public int Iterations = 5;
 
 
 	void Start()
@@ -36,7 +40,13 @@ public class ModularWorldGenerator : MonoBehaviour
         var spawnPoint = startModule.GetSpawnPoint().gameObject;
         player.transform.position = spawnPoint.transform.position;
         player.SetActive(true);
-	}
+       
+    
+        for (int i = 0; i < baker.Length; i++)
+        {
+            baker[i].BuildNavMesh();
+        }
+}
 
 
 	private void MatchExits(ModuleConnector oldExit, ModuleConnector newExit)
