@@ -13,6 +13,11 @@ public class Module : MonoBehaviour
     {
         return GetComponentInChildren<SpawnPoint>();
     }
+
+    public EnemySpawnPoint[] GetEnemySpawnPoints()
+    {
+        return GetComponentsInChildren<EnemySpawnPoint>();
+    }
 }
 
   

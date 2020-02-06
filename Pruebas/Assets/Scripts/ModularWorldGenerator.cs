@@ -10,43 +10,62 @@ public class ModularWorldGenerator : MonoBehaviour
     public GameObject player;
     public GameObject enemy;
 
-    public NavMeshSurface[] baker;
+
+    private Vector3 playerSpawnPoint;
+
+    public NavMeshSurface baker;
 
     public int Iterations = 5;
 
 
+    private List<Vector3> enemySpawnPoints;
+
+
 	void Start()
 	{
-		var startModule = (Module) Instantiate(StartModule, transform.position, transform.rotation);
-		var pendingExits = new List<ModuleConnector>(startModule.GetExits());
+        enemySpawnPoints = new List<Vector3>();
+        GenerateDungeon();
 
-		for (int iteration = 0; iteration < Iterations; iteration++)
-		{
-			var newExits = new List<ModuleConnector>();
 
-			foreach (var pendingExit in pendingExits)
-			{
-				var newTag = GetRandom(pendingExit.Tags);
-				var newModulePrefab = GetRandomWithTag(Modules, newTag);
-				var newModule = (Module) Instantiate(newModulePrefab);
-				var newModuleExits = newModule.GetExits();
-				var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
-				MatchExits(pendingExit, exitToMatch);
-				newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
-			}
-
-			pendingExits = newExits;
-		}
-        var spawnPoint = startModule.GetSpawnPoint().gameObject;
-        player.transform.position = spawnPoint.transform.position;
+        //spawn player
+        player.transform.position = playerSpawnPoint;
         player.SetActive(true);
-       
-    
-        for (int i = 0; i < baker.Length; i++)
+
+        baker.BuildNavMesh();
+        EnemySpawnPoint[] spawnPoints = GameObject.FindObjectsOfType<EnemySpawnPoint>();
+        CheckEnemySpawn(spawnPoints);
+        SpawnEnemies();
+
+        //bake navigation mesh for AI
+          
+
+    }
+
+
+    private void GenerateDungeon()
+    {
+        var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
+        var pendingExits = new List<ModuleConnector>(startModule.GetExits());
+
+        for (int iteration = 0; iteration < Iterations; iteration++)
         {
-            baker[i].BuildNavMesh();
+            var newExits = new List<ModuleConnector>();
+
+            foreach (var pendingExit in pendingExits)
+            {
+                var newTag = GetRandom(pendingExit.Tags);
+                var newModulePrefab = GetRandomWithTag(Modules, newTag);
+                var newModule = Instantiate(newModulePrefab);
+                var newModuleExits = newModule.GetExits();
+                var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
+                MatchExits(pendingExit, exitToMatch);
+                newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
+            }
+
+            pendingExits = newExits;
         }
-}
+        playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
+    }
 
 
 	private void MatchExits(ModuleConnector oldExit, ModuleConnector newExit)
@@ -77,4 +96,24 @@ public class ModularWorldGenerator : MonoBehaviour
 	{
 		return Vector3.Angle(Vector3.forward, vector) * Mathf.Sign(vector.x);
 	}
+
+    private void CheckEnemySpawn(EnemySpawnPoint[] spawnPoints)
+    {
+        foreach (var p in spawnPoints)
+        {
+            Debug.Log(p.gameObject.ToString());
+                enemySpawnPoints.Add(p.transform.position);
+        }
+        
+    }
+
+    private void SpawnEnemies()
+    {
+        foreach(var p in enemySpawnPoints)
+        {
+            GameObject enemigo = Instantiate(enemy);
+            enemigo.transform.position = p;
+            enemigo.SetActive(true);
+        }
+    }
 }
