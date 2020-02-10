@@ -7,6 +7,8 @@ public class ModularWorldGenerator : MonoBehaviour
 {
 	public Module[] Modules;
 	public Module StartModule;
+    public Module endModule;
+
     public GameObject player;
     public GameObject enemy;
 
@@ -31,12 +33,14 @@ public class ModularWorldGenerator : MonoBehaviour
         player.transform.position = playerSpawnPoint;
         player.SetActive(true);
 
+        //bake navigation mesh for AI
         baker.BuildNavMesh();
+        //Spawn enemies in all the spawnpoints in the map
         EnemySpawnPoint[] spawnPoints = GameObject.FindObjectsOfType<EnemySpawnPoint>();
         CheckEnemySpawn(spawnPoints);
         SpawnEnemies();
 
-        //bake navigation mesh for AI
+        
           
 
     }
@@ -45,6 +49,7 @@ public class ModularWorldGenerator : MonoBehaviour
     private void GenerateDungeon()
     {
         var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
+        playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
         var pendingExits = new List<ModuleConnector>(startModule.GetExits());
 
         for (int iteration = 0; iteration < Iterations; iteration++)
@@ -61,10 +66,16 @@ public class ModularWorldGenerator : MonoBehaviour
                 MatchExits(pendingExit, exitToMatch);
                 newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
             }
-
             pendingExits = newExits;
         }
-        playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
+
+        foreach(var pendingExit in pendingExits)
+        {
+            var newModule = Instantiate(endModule);
+            var newModuleExits = newModule.GetExits();
+            var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
+            MatchExits(pendingExit, exitToMatch);
+        }  
     }
 
 
