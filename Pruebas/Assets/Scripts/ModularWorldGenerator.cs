@@ -6,52 +6,37 @@ using System.Collections;
 
 public class ModularWorldGenerator : MonoBehaviour
 {
-    public Module[] Modules;
+    public Room[] RoomsModules;
 
-    private List<ModuleConnector> pendingExits;
-    public Module StartModule;
-    public Module endModule;
+    private List<RoomConector> pendingConnections;
+
+    public Room StartRoom;
+    public Room EndRoom;
+
+    public float MAX_CHESTS;
 
     public GameObject player;
-    public GameObject enemy;
 
-
-    private Vector3 playerSpawnPoint;
+    public GameObject EnemyPrefab;
+    public GameObject ChestPrefab;
 
     public NavMeshSurface baker;
 
     public int Iterations = 5;
 
-
-    private List<Vector3> enemySpawnPoints;
+    private Vector3 playerSpawnPoint;
 
     public LayerMask roomLayerMask;
 
 
     void Start()
     {
-        //done = true;
-        enemySpawnPoints = new List<Vector3>();
-        //GenerateDungeon();
-
-        StartCoroutine("Generate");
-
-
-        //spawn player
-        //player.transform.position = playerSpawnPoint;
-        //player.SetActive(true);
-
-        //bake navigation mesh for AI
-        //baker.BuildNavMesh();
-        //Spawn enemies in all the spawnpoints in the map
-        //EnemySpawnPoint[] spawnPoints = GameObject.FindObjectsOfType<EnemySpawnPoint>();
-        //CheckEnemySpawn(spawnPoints);
-        //SpawnEnemies();
+        StartCoroutine("GenerateDungeon");
     }
 
 
 
-    IEnumerator Generate()
+    IEnumerator GenerateDungeon()
     {
         WaitForSecondsRealtime startup = new WaitForSecondsRealtime(1);
         WaitForFixedUpdate interval = new WaitForFixedUpdate();
@@ -64,17 +49,19 @@ public class ModularWorldGenerator : MonoBehaviour
 
         var r = 20;
         //places rooms
-        for(int iteration = 0; iteration < Iterations; iteration++)
+        for (int iteration = 0; iteration < Iterations; iteration++)
         {
-            List<ModuleConnector> newExits = new List<ModuleConnector>();
+            List<RoomConector> newPendingConnections = new List<RoomConector>();
+
             yield return interval;
-            foreach (ModuleConnector pendingExit in pendingExits)
+            //Iterate over all connections that are possible
+            foreach (RoomConector pendingConnections in pendingConnections)
             {
-                PlaceRoom(r, pendingExit, newExits);
+                PlaceRoom(r, pendingConnections, newPendingConnections);
                 yield return interval;
                 r += 10;
             }
-            pendingExits = newExits;
+            pendingConnections = newPendingConnections;
             yield return interval;
         }
 
@@ -82,6 +69,18 @@ public class ModularWorldGenerator : MonoBehaviour
         PlaceEndRooms();
         yield return interval;
 
+        //spawn player
+        player.transform.position = playerSpawnPoint;
+        player.SetActive(true);
+
+        //bake navigation mesh for AI
+        baker.BuildNavMesh();
+        //Spawn enemies in all the spawnpoints in the map
+        List<EnemySpawnPoint> spawnPoints = GameObject.FindObjectsOfType<EnemySpawnPoint>().ToList();
+        SpawnEnemies(spawnPoints);
+
+        List<ChestSpawnPoint> chestSpawnPoints = GameObject.FindObjectsOfType<ChestSpawnPoint>().ToList();
+        SpawnChest(chestSpawnPoints);
         yield return new WaitForSeconds(3);
         yield return 0;
 
@@ -90,44 +89,54 @@ public class ModularWorldGenerator : MonoBehaviour
 
     private void PlaceStartRoom()
     {
-        var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
-        playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
-        pendingExits = new List<ModuleConnector>(startModule.GetExits());
+        Room startRoom = Instantiate(StartRoom, transform.position, transform.rotation);
+        startRoom.name = "Room0";
+        startRoom.GetComponentsInChildren<EnemySpawnPoint>().ToList().ForEach(ep => Destroy(ep));
+        playerSpawnPoint = startRoom.GetSpawnPoint().gameObject.transform.position;
+        pendingConnections = new List<RoomConector>(startRoom.GetRoomConnections());
     }
 
-    private void PlaceRoom(int r, ModuleConnector pendingExit, List<ModuleConnector> newExits)
+    private void PlaceRoom(int r, RoomConector pendingConnection, List<RoomConector> newPendingconnections)
     {
-            GameObject[] gameobjectsMeshes = GameObject.FindGameObjectsWithTag("Generation");
-       
-            var newTag = GetRandom(pendingExit.Tags);
-            var newModulePrefab = GetRandomWithTag(Modules, newTag);
+        //Random choose a possible connection from the list of the connector
+        var newTag = GetRandom(pendingConnection.Connections);
 
-            Module newModule = Instantiate(newModulePrefab,new Vector3(r,r,r),new Quaternion());
+        //Random choose a room that have the choosed tag
+        Room newRoomPrefab = GetRandomWithTag(RoomsModules, newTag);
 
-            newModule.gameObject.name = ""+ r +"";
-            var newModuleExits = newModule.GetExits();
-            var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
-            MatchExits(pendingExit, exitToMatch);
+        //Create the room
+        Room newRoom = Instantiate(newRoomPrefab, new Vector3(r, r, r), new Quaternion());
+        newRoom.gameObject.name = "Room" + r + "";
 
-        if (CheckRoomOverlap(newModule)==true)
+        RoomConector[] newModuleExits = newRoom.GetRoomConnections();
+        var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
+        MatchExits(pendingConnection, exitToMatch);
+
+        if (CheckRoomOverlap(newRoom) == true)
         {
-            ResetGenerate(); 
+            ResetGenerate();
         }
         else
         {
-            
+
         }
 
-            newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
+        newPendingconnections.AddRange(newModuleExits.Where(e => e != exitToMatch));
 
     }
 
+    public bool CheckOverlap(Room room)
+    {
 
-    public bool CheckRoomOverlap(Module room)
+        return false;
+    }
+
+
+    public bool CheckRoomOverlap(Room room)
     {
         Vector3 center = room.transform.position;
         Vector3 extents = room.transform.localScale;
-        
+
 
         Collider[] colliders = Physics.OverlapBox(center, extents / 2, room.transform.rotation, roomLayerMask);
 
@@ -143,7 +152,7 @@ public class ModularWorldGenerator : MonoBehaviour
                 {
                     Debug.Log("overlap");
                     Debug.Log(center);
-                    Debug.Log(extents/2);
+                    Debug.Log(extents / 2);
                     Debug.Log(c.transform.parent.gameObject.name);
                     Debug.Log(room.gameObject.name);
                     return true;
@@ -153,43 +162,12 @@ public class ModularWorldGenerator : MonoBehaviour
         return false;
     }
 
-    public bool CollisionIntersect(Module room, GameObject[] gameObjectsMeshes)
-    {
-        Debug.Log("Nueva Comprobacion");
-        Bounds boundsToTest = room.gameObject.GetComponentInChildren<MeshCollider>().bounds;
-        boundsToTest.Expand(-0.1f);
-        Debug.Log(room.gameObject.name);
-        Debug.Log(room.GetComponentInChildren<MeshCollider>().gameObject);
-        Debug.Log(room.transform.position);
-        Debug.Log(boundsToTest);
-        Debug.Log("######################");
-
-        foreach (GameObject g in gameObjectsMeshes)
-        {
-            Bounds b = g.GetComponentInChildren<MeshCollider>().bounds;
-           
-            if (boundsToTest.Intersects(b))
-            {
-                Debug.Log(g.name);
-                Debug.Log(b);
-                Debug.Log("#####################");
-                Debug.Log("Overlap");
-                return true;
-            }
-            else
-            {
-                continue;
-            }
-        }
-        return false;
-    }
-
     private void PlaceEndRooms()
     {
-        foreach (var pendingExit in pendingExits)
+        foreach (var pendingExit in pendingConnections)
         {
-            var newModule = Instantiate(endModule);
-            var newModuleExits = newModule.GetExits();
+            var newModule = Instantiate(EndRoom);
+            var newModuleExits = newModule.GetRoomConnections();
             var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
             MatchExits(pendingExit, exitToMatch);
         }
@@ -197,74 +175,73 @@ public class ModularWorldGenerator : MonoBehaviour
 
     private void ResetGenerate()
     {
-        StopCoroutine("Generate");
+        StopCoroutine("GenerateDungeon");
 
         //destroy
         GameObject[] gs = GameObject.FindGameObjectsWithTag("Generation");
-        foreach(GameObject g in gs)
+
+        foreach (GameObject g in gs)
         {
             Destroy(g);
         }
-        pendingExits.Clear();
-        
+        pendingConnections.Clear();
 
-
-        StartCoroutine("Generate");
+        StartCoroutine("GenerateDungeon");
     }
 
 
-/**private void GenerateDungeon()
-    {
-        done = true;
-        var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
-        playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
-        var pendingExits = new List<ModuleConnector>(startModule.GetExits());
-        var r = 20;
-
-        for (int iteration = 0; iteration < Iterations; iteration++)
+    /**private void GenerateDungeon()
         {
-            var newExits = new List<ModuleConnector>();
+            done = true;
+            var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
+            playerSpawnPoint = startModule.GetSpawnPoint().gameObject.transform.position;
+            var pendingExits = new List<ModuleConnector>(startModule.GetExits());
+            var r = 20;
 
+            for (int iteration = 0; iteration < Iterations; iteration++)
+            {
+                var newExits = new List<ModuleConnector>();
+
+
+                foreach (var pendingExit in pendingExits)
+                {
+                   //GameObject[] t = GameObject.FindGameObjectsWithTag("Generation");
+
+
+
+
+                    var newTag = GetRandom(pendingExit.Tags);
+                    var newModulePrefab = GetRandomWithTag(Modules, newTag);
+
+                    var newModule = Instantiate(newModulePrefab, new Vector3(r,r,r), new Quaternion());
+
+                    newModule.gameObject.name = "" + r + "";
+                    var newModuleExits = newModule.GetExits();
+                    var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
+                    MatchExits(pendingExit, exitToMatch);
+
+                    //CheckRoomOverlap(newModule);
+
+
+                    newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
+
+
+                    r += 10;
+
+                }
+                pendingExits = newExits;
+            }
 
             foreach (var pendingExit in pendingExits)
             {
-               //GameObject[] t = GameObject.FindGameObjectsWithTag("Generation");
-
-
-
-
-                var newTag = GetRandom(pendingExit.Tags);
-                var newModulePrefab = GetRandomWithTag(Modules, newTag);
-
-                var newModule = Instantiate(newModulePrefab, new Vector3(r,r,r), new Quaternion());
-
-                newModule.gameObject.name = "" + r + "";
+                var newModule = Instantiate(endModule);
                 var newModuleExits = newModule.GetExits();
                 var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
                 MatchExits(pendingExit, exitToMatch);
-
-                //CheckRoomOverlap(newModule);
-
-
-                newExits.AddRange(newModuleExits.Where(e => e != exitToMatch));
-
-
-                r += 10;
-
             }
-            pendingExits = newExits;
-        }
+        }**/
 
-        foreach (var pendingExit in pendingExits)
-        {
-            var newModule = Instantiate(endModule);
-            var newModuleExits = newModule.GetExits();
-            var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
-            MatchExits(pendingExit, exitToMatch);
-        }
-    }**/
-
-    private void MatchExits(ModuleConnector oldExit, ModuleConnector newExit)
+    private void MatchExits(RoomConector oldExit, RoomConector newExit)
     {
         var newModule = newExit.transform.parent;
         var forwardVectorToMatch = -oldExit.transform.forward;
@@ -279,9 +256,9 @@ public class ModularWorldGenerator : MonoBehaviour
         return array[Random.Range(0, array.Length)];
     }
 
-    private static Module GetRandomWithTag(IEnumerable<Module> modules, string tagToMatch)
+    private static Room GetRandomWithTag(IEnumerable<Room> modules, string tagToMatch)
     {
-        var matchingModules = modules.Where(m => m.Tags.Contains(tagToMatch)).ToArray();
+        var matchingModules = modules.Where(m => m.RoomTags.Contains(tagToMatch)).ToArray();
         return GetRandom(matchingModules);
     }
 
@@ -290,22 +267,33 @@ public class ModularWorldGenerator : MonoBehaviour
         return Vector3.Angle(Vector3.forward, vector) * Mathf.Sign(vector.x);
     }
 
-    private void CheckEnemySpawn(EnemySpawnPoint[] spawnPoints)
+    private void SpawnEnemies(List<EnemySpawnPoint> esps)
     {
-        foreach (var p in spawnPoints)
+        var i = 0;
+        foreach (EnemySpawnPoint esp in esps)
         {
-            enemySpawnPoints.Add(p.transform.position);
+            GameObject newEnemy = Instantiate(EnemyPrefab);
+            newEnemy.gameObject.name = "Enemy" + i.ToString();
+            newEnemy.transform.parent = esp.transform;
+            newEnemy.transform.position = esp.transform.position;
+            newEnemy.transform.localScale = new Vector3(1, 1, 1); 
+            newEnemy.SetActive(true);
+            i++;
         }
-
     }
 
-    private void SpawnEnemies()
+    private void SpawnChest(List<ChestSpawnPoint> csps)
     {
-        foreach (var p in enemySpawnPoints)
+        for(int i = 0; i < MAX_CHESTS; i++)
         {
-            GameObject enemigo = Instantiate(enemy);
-            enemigo.transform.position = p;
-            enemigo.SetActive(true);
+            int rand = Random.Range(0, csps.Count);
+            ChestSpawnPoint csp = csps[rand];
+            GameObject newChest = Instantiate(ChestPrefab, csp.transform.position, csp.transform.rotation);
+            newChest.gameObject.name = "Chest" + i.ToString();
+            newChest.transform.parent = csp.transform;
+            newChest.SetActive(true);
+            csps.Remove(csp);
+
         }
     }
 }
