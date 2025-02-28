@@ -13,7 +13,7 @@ https://www.redblobgames.com/maps/terrain-from-noise/
 https://gamedevelopment.tutsplus.com/bake-your-own-3d-dungeons-with-procedural-recipes--gamedev-14360t <--- The one I took most inspiration from \
 https://forums.tigsource.com/index.php?topic=41420.0 \
 https://donjon.bin.sh/code/dungeon/ \
-https://arxiv.org/pdf/1906.04660 \
+https://arxiv.org/pdf/1906.04660 
 
 ## Generation by tile sets - Very interesting for 2D worlds
 ### https://aramserobyan.itch.io/procedural-tileset-generator
